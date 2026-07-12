@@ -7,6 +7,7 @@ export class VoteSurveyStore {
     this.isLoading = false;
     this.isSubmitting = false;
     this.isAnswered = false;
+    this.answeredSurveys = [];
 
     makeObservable(this, {
       currentSurvey: observable,
@@ -14,6 +15,7 @@ export class VoteSurveyStore {
       isLoading: observable,
       isSubmitting: observable,
       isAnswered: observable,
+      answeredSurveys: observable,
       loadSurvey: action,
       selectOption: action,
       submitVote: action
@@ -22,6 +24,7 @@ export class VoteSurveyStore {
 
   loadSurvey(surveyId) {
     this.isLoading = true;
+    this.isAnswered = false;
 
     // Mock - מדמה שליפת סקר ספציפי מה-DB
     setTimeout(() => {
@@ -42,7 +45,12 @@ export class VoteSurveyStore {
           }
         ]
       };
-      this.isAnswered = true;
+      if (this.answeredSurveys.indexOf(surveyId) !== -1){
+        this.isAnswered = true;
+      } else{
+        this.isAnswered = false;
+      }
+
       this.isLoading = false;
     }, 500);
   }
@@ -67,6 +75,8 @@ export class VoteSurveyStore {
 
     this.isSubmitting = false;
     this.selectedOptions = {};
+    this.answeredSurveys.push(this.currentSurvey.id);
+    this.isAnswered = true;
     return true;
   }
 }

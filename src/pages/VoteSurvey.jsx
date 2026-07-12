@@ -31,7 +31,16 @@ const VoteSurvey = observer(() => {
     }
   };
 
-  if (store.isAnswered) {
+
+  if (store.isLoading || !store.currentSurvey) {
+    return (
+      <Center style={{ height: '100vh' }}>
+        <Loader size="xl" />
+      </Center>
+    );
+  }
+
+    if (store.isAnswered) {
     return (
       <Center style={{ height: '100vh' }}>
         <Container size="xs" ta="center">
@@ -44,13 +53,6 @@ const VoteSurvey = observer(() => {
         </Container>
       </Center>
     )
-  }
-  if (store.isLoading || !store.currentSurvey) {
-    return (
-      <Center style={{ height: '100vh' }}>
-        <Loader size="xl" />
-      </Center>
-    );
   }
 
 
