@@ -15,32 +15,46 @@ const VoteSurvey = observer(() => {
     store.loadSurvey(id);
   }, [id]);
 
-    const handleVoteSubmit = async () => {
-        const totalQuestions = store.currentSurvey.questions.length;
-        const answeredQuestions = Object.keys(store.selectedOptions).length;
-        
-        if (answeredQuestions < totalQuestions) {
-            alert('Please answer all questions before submitting.');
-            return;
-        }
-    
-        const success = await store.submitVote();
-        if (success) {
-            alert('Your vote has been recorded successfully!');
-            navigate('/');
-        }
-    };
+  const handleVoteSubmit = async () => {
+    const totalQuestions = store.currentSurvey.questions.length;
+    const answeredQuestions = Object.keys(store.selectedOptions).length;
 
-    if (store.isLoading || !store.currentSurvey) {
-        return (
-        <Center style={{ height: '100vh' }}>
-            <Loader size="xl" />
-        </Center>
-        );
+    if (answeredQuestions < totalQuestions) {
+      alert('Please answer all questions before submitting.');
+      return;
     }
-    
 
+    const success = await store.submitVote();
+    if (success) {
+      alert('Your vote has been recorded successfully!');
+      navigate('/');
+    }
+  };
+
+  if (store.isAnswered) {
     return (
+      <Center style={{ height: '100vh' }}>
+        <Container size="xs" ta="center">
+          <Title order={3} c="blue" mb="sm">
+            You have already voted!
+          </Title>
+          <Text size="sm" c="dimmed" mb="xl">
+            Thank you for participating. You can only submit your answers once per survey.
+          </Text>
+        </Container>
+      </Center>
+    )
+  }
+  if (store.isLoading || !store.currentSurvey) {
+    return (
+      <Center style={{ height: '100vh' }}>
+        <Loader size="xl" />
+      </Center>
+    );
+  }
+
+
+  return (
     <Container size="sm" py="xl">
       <Box mb="xl" ta="center">
         <Title order={2} c="blue">
