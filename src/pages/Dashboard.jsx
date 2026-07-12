@@ -7,7 +7,7 @@ import { IconPlus, IconCheck } from '@tabler/icons-react';
 import { dashboardStore } from '../stores/DashboardStore';
 import SurveyCard from '../components/SurveyCard';
 
-const Dashboard = observer(() => {
+const Dashboard = observegr(() => {
   const store = dashboardStore;
   const navigate = useNavigate();
 
