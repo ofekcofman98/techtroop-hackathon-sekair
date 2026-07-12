@@ -1,15 +1,24 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
-import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, Flex } from '@mantine/core';
+import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, Flex, Loader } from '@mantine/core';
 import { IconPlus, IconCheck } from '@tabler/icons-react';
 // import SurveyFilters from '../components/SurveyFilters';
 import { dashboardStore } from '../stores/DashboardStore';
 import SurveyCard from '../components/SurveyCard';
+import { useEffect } from 'react';
 
 const Dashboard = observer(() => {
   const store = dashboardStore;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    store.fetchSurveys();
+  }, []);
+
+
+  if (store.isLoading) return <Loader />;
+  if (store.error) return <Text c="red">Failed Fetching: {store.error}</Text>;
 
   return (
     <Container size="lg" py="xl">
