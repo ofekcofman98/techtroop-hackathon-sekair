@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, Flex, ActionIcon } from '@mantine/core';
 import { IconCheck, IconTrash, IconLock, IconWorld } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { userStore } from '../stores/UserStore';
+import { userStore } from '../stores/userStore';
 import { dashboardStore } from '../stores/DashboardStore';
 import { getCategoryColor } from '../constants/categories';
 import { SurveyVisibilityBadge } from './SurveyVisibiltyBadge';

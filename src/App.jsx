@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
+import { observer } from 'mobx-react-lite';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthForm } from './components/AuthForm';
 import CreateSurvey from './pages/CreateSurvey';

@@ -3,14 +3,14 @@ import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Group, Button, Text, Menu, Avatar, UnstyledButton } from '@mantine/core';
 import { IconLogout, IconUser, IconLayoutDashboard } from '@tabler/icons-react';
-import { userStore } from '../stores/UserStore';
+import { userStore } from '../stores/userStore';
 
 export const Navbar = observer(() => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await userStore.logout();
-    navigate('/login');
+    // navigate('/login');
   };
 
   if (!userStore.isAuthenticated) {
