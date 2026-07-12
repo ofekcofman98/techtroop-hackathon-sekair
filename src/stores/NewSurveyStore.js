@@ -11,6 +11,7 @@ export class NewSurveyStore {
     }];
     this.isLoading = false;
     this.error = null;
+    this.isSuccess = false;
 
     makeObservable(this, {
       title: observable,
@@ -18,6 +19,7 @@ export class NewSurveyStore {
       questions: observable,
       isLoading: observable,
       error: observable,
+      isSuccess: observable,
       setTitle: action,
       setIsAnonymous: action,
       addQuestion: action,
@@ -90,7 +92,8 @@ submitSurvey = async () => {
       if (questionsError) throw questionsError;
 
       runInAction(() => {
-        this.resetForm();
+        this.isSuccess = true;
+        // this.resetForm();
       });
       return true;
 
@@ -112,6 +115,7 @@ submitSurvey = async () => {
     this.title = '';
     this.isAnonymous = false;
     this.questions = [{ question_text: '', options: ['', '', '', ''] }];
+    this.isSuccess = false;
   }
 }
 
