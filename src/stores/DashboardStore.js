@@ -20,7 +20,24 @@ export class DashboardStore {
             setSearchQuery: action,
             setSelectedCategory: action,
             filteredSurveys: computed 
-         });
+        });
     }
+
+        setSearchQuery(query) {
+            this.searchQuery = query;
+        }
+
+        setSelectedCategory(category) {
+            this.selectedCategory = category;
+        }
+
+        get filteredSurveys() {
+            return this.surveys.filter(survey => {
+            const matchesCategory = this.selectedCategory === 'all' || survey.category === this.selectedCategory;
+            const matchesSearch = survey.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+            return matchesCategory && matchesSearch;
+            });
+        }
 }
         
+export const dashboardStore = new DashboardStore();

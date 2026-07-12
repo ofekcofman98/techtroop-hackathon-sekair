@@ -1,53 +1,53 @@
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
-import { Container, Title, TextInput, Switch, Button, Card, Text, ActionIcon, Stack, Group, Divider } from '@mantine/core';
-import { IconTrash, IconPlus, IconSend } from '@tabler/icons-react';
+import { observer } from 'mobx-react-lite';
+import { Container, Title, TextInput, Switch, Button, Card, Text, ActionIcon, Stack, Group, Divider, Flex } from '@mantine/core';
+import { IconTrash, IconPlus, IconSend, IconArrowLeft } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { newSurveyStore } from '../stores/NewSurveyStore';
+import { SurveySettingsCard } from '../components/SurveySettingCard';
 
-class CreateSurvey extends Component {
-  handleSubmit = async (e) => {
+const CreateSurvey = observer(() => {
+  const store = newSurveyStore;
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!newSurveyStore.title.trim()) {
+    if (!store.title.trim()) {
       alert('Please enter a survey title');
       return;
     }
 
-    const success = await newSurveyStore.submitSurvey();
+    const success = await store.submitSurvey();
     if (success) {
       alert('Survey created successfully (Mock)!');
     }
   };
 
-  render() {
-    const store = newSurveyStore;
-
     return (
       <Container size="sm" py="xl">
-        <Title order={2} mb="lg" ta="center" c="blue">
-          Create New Survey
-        </Title>
+        <Flex justify="space-between" align="center" mb="lg" wrap="nowrap">
+          <Title order={2} c="blue">
+            Create New Survey
+          </Title>
+          <Button
+            variant="outline"
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => navigate('/')}
+          >
+            Back to Dashboard
+          </Button>
+        </Flex>
 
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <Stack spacing="md">
             
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <TextInput
-                label="Survey Title"
-                placeholder="e.g., What are your favorite weekend hobbies?"
-                value={store.title}
-                onChange={(e) => store.setTitle(e.target.value)}
-                required
-                mb="md"
-              />
-
-              <Switch
-                label="Make responses anonymous"
-                description="If enabled, votes will not be linked to student profiles"
-                checked={store.isAnonymous}
-                onChange={(e) => store.setIsAnonymous(e.currentTarget.checked)}
-              />
-            </Card>
+            <SurveySettingsCard
+              title={store.title}
+              isAnonymous={store.isAnonymous}
+              onTitleChange={(e) => store.setTitle(e.target.value)}
+              onAnonymousChange={(e) => store.setIsAnonymous(e.currentTarget.checked)}
+            />
 
             <Divider label="Survey Questions" labelPosition="center" my="lg" />
 
@@ -64,7 +64,6 @@ class CreateSurvey extends Component {
                     Question #{qIndex + 1}
                   </Text>
                   
-                  {/* כפתור מחיקה - יוצג רק אם יש יותר משאלה אחת בטופס */}
                   {store.questions.length > 1 && (
                     <ActionIcon 
                       color="red" 
@@ -126,7 +125,6 @@ class CreateSurvey extends Component {
         </form>
       </Container>
     );
-  }
-}
+});
 
-export default observer(CreateSurvey);
+export default CreateSurvey;
