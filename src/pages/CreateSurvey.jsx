@@ -5,6 +5,7 @@ import { IconTrash, IconPlus, IconSend, IconArrowLeft } from '@tabler/icons-reac
 import { useNavigate } from 'react-router-dom';
 import { newSurveyStore } from '../stores/NewSurveyStore';
 import { SurveySettingsCard } from '../components/SurveySettingCard';
+import { QuestionFormCard } from '../components/QuestionFormCard';
 import { userStore } from '../stores/userStore';
 
 const CreateSurvey = observer(() => {
@@ -25,51 +26,28 @@ const CreateSurvey = observer(() => {
         navigate('/dashboard');
         store.resetForm();
       }, 3000);
-
-      // alert('Survey created successfully (Mock)!');
     }
   };
 
-  // תוקן: הוספנו const ומחקנו את מבנה ה-Class
   const handleLogout = async () => {
     await userStore.logout();
   };
 
-  // תוקן: מחקנו את ה-()render המיותר. ה-return רץ ישירות בתוך הפונקציה.
   return (
     <Container size="sm" py="xl">
-
-      {/* ה-Header של החבר (פרטי משתמש וניתוק) */}
-      <Group justify="space-between" mb="xl" style={{ borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-        <div>
-          <Title order={4} c="blue">SekAir System</Title>
-          <Text size="xs" c="dimmed">
-            Logged in as: <strong style={{ color: '#333' }}>{userStore.profile?.name || 'Student'}</strong> ({userStore.profile?.role})
-          </Text>
-        </div>
-
-        {/* תוקן: handleLogout במקום this.handleLogout */}
-        <Button color="red" variant="light" size="xs" onClick={handleLogout}>
-          Logout
-        </Button>
-      </Group>
-
       {store.isSuccess ? (
-
         <Center style={{ height: '40vh' }}>
           <Stack align="center" ta="center">
-            <Title order={2} c="green"> Survey Created Successfully!</Title>
+            <Title order={2} c="green">Survey Created Successfully!</Title>
             <Text size="sm" c="dimmed">
               Your survey has been published to Supabase.
             </Text>
-            <Text size="xs" c="blue" weight={500} mt="xs">
+            <Text size="xs" c="blue" fw={500} mt="xs">
               Redirecting you to the dashboard...
             </Text>
           </Stack>
         </Center>
-
       ) : (
-
         <>
           <Flex justify="space-between" align="center" mb="lg" wrap="nowrap">
             <Title order={2} c="blue">
@@ -78,15 +56,14 @@ const CreateSurvey = observer(() => {
             <Button
               variant="outline"
               leftSection={<IconArrowLeft size={16} />}
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
             >
               Back to Dashboard
             </Button>
           </Flex>
 
           <form onSubmit={handleSubmit}>
-            <Stack spacing="md">
-
+            <Stack gap="md">
               <SurveySettingsCard
                 title={store.title}
                 isAnonymous={store.isAnonymous}
@@ -97,56 +74,24 @@ const CreateSurvey = observer(() => {
               <Divider label="Survey Questions" labelPosition="center" my="lg" />
 
               {store.error && (
-                <Text color="red" size="sm" ta="center" weight={500}>
+                <Text color="red" size="sm" ta="center" fw={500}>
                   {store.error}
                 </Text>
               )}
 
               {store.questions.map((question, qIndex) => (
-                <Card key={qIndex} shadow="sm" padding="lg" radius="md" withBorder>
-                  <Group position="apart" mb="xs">
-                    <Text weight={600} size="sm" c="dimmed">
-                      Question #{qIndex + 1}
-                    </Text>
-
-                    {store.questions.length > 1 && (
-                      <ActionIcon
-                        color="red"
-                        variant="light"
-                        onClick={() => store.removeQuestion(qIndex)}
-                      >
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    )}
-                  </Group>
-
-                  <TextInput
-                    placeholder="Enter your question here"
-                    value={question.question_text}
-                    onChange={(e) => store.updateQuestionText(qIndex, e.target.value)}
-                    required
-                    mb="md"
-                  />
-
-                  <Text size="xs" weight={500} mb={5} c="dimmed">
-                    Answers Options (Provide exactly 4 options):
-                  </Text>
-                  <Stack spacing="xs">
-                    {question.options.map((option, oIndex) => (
-                      <TextInput
-                        key={oIndex}
-                        placeholder={`Option ${oIndex + 1}`}
-                        value={option}
-                        onChange={(e) => store.updateOptionText(qIndex, oIndex, e.target.value)}
-                        required
-                        size="sm"
-                      />
-                    ))}
-                  </Stack>
-                </Card>
+                <QuestionFormCard
+                  key={qIndex}
+                  question={question}
+                  index={qIndex}
+                  showDelete={store.questions.length > 1}
+                  onDelete={() => store.removeQuestion(qIndex)}
+                  onQuestionTextChange={(text) => store.updateQuestionText(qIndex, text)}
+                  onOptionTextChange={(oIndex, text) => store.updateOptionText(qIndex, oIndex, text)}
+                />
               ))}
 
-              <Group position="apart" mt="lg">
+              <Group justify="space-between" mt="lg">
                 <Button
                   variant="outline"
                   leftSection={<IconPlus size={16} />}
@@ -165,13 +110,12 @@ const CreateSurvey = observer(() => {
                   Publish Survey
                 </Button>
               </Group>
-
             </Stack>
           </form>
         </>
       )}
     </Container>
   );
-}); // סגירת ה-observer בצורה תקינה
+}); 
 
 export default CreateSurvey;

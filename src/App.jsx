@@ -7,12 +7,14 @@ import CreateSurvey from './pages/CreateSurvey';
 import Dashboard from './pages/Dashboard';
 import VoteSurvey from './pages/VoteSurvey';
 import '@mantine/core/styles.css';
+import { Navbar } from './components/Navbar';
 
 function App() {
   return (
     <>
       <MantineProvider defaultColorScheme="light">
         <BrowserRouter>
+          <Navbar/>
           <Routes>
 
             <Route path="/" element={<Navigate to="/login" replace />} />

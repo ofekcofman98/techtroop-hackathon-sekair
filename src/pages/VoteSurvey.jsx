@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Title, Card, Text, Radio, Button, Stack, Loader, Center, Box } from '@mantine/core';
-import { IconCheck } from '@tabler/icons-react';
+import { Container, Title, Card, Text, Radio, Button, Stack, Loader, Center, Box, Flex } from '@mantine/core';
+import { IconCheck, IconArrowLeft } from '@tabler/icons-react';
 import { QuestionVoteCard } from '../components/QuestionVoteCard';
 import { voteSurveyStore } from '../stores/VoteSurveyStore';
 
@@ -56,14 +56,23 @@ const VoteSurvey = observer(() => {
   }
 
 
-  return (
+return (
     <Container size="sm" py="xl">
-      <Box mb="xl" ta="center">
+      <Flex justify="space-between" align="center" mb="lg" wrap="nowrap" gap="md">
         <Title order={2} c="blue">
           {store.currentSurvey.title}
         </Title>
+        <Button
+          variant="outline"
+          leftSection={<IconArrowLeft size={16} />}
+          onClick={() => navigate('/dashboard')}
+        >
+          Back to Dashboard
+        </Button>
+      </Flex>
 
-        <Text size="sm" c="dimmed" mt="xs">
+      <Box mb="xl">
+        <Text size="sm" c="dimmed">
           {store.currentSurvey.is_anonymous ? "🔒 This survey is anonymous" : "📢 Your vote will be public"}
         </Text>
       </Box>
