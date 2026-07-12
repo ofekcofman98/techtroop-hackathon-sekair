@@ -2,13 +2,13 @@ import { observable, action, makeObservable, runInAction } from 'mobx';
 import { supabase } from '../services/supabaseClient';
 
 export class VoteSurveyStore {
-
   currentSurvey = null;
   selectedOptions = {};
   isLoading = false;
   isSubmitting = false;
   isAnswered = false;
   answeredSurveys = [];
+  currentResults = null;
 
   constructor() {
     makeObservable(this, {
@@ -18,6 +18,8 @@ export class VoteSurveyStore {
       isSubmitting: observable,
       isAnswered: observable,
       answeredSurveys: observable,
+      currentResults: observable,
+      loadResults: action,
       loadSurvey: action,
       selectOption: action,
       submitVote: action
@@ -75,6 +77,23 @@ export class VoteSurveyStore {
     }
   }
 
+  loadResults(surveyId) {
+    const mockResultsDb = {
+      'q1': {
+        'React': 15,
+        'Vue': 5,
+        'Angular': 2,
+        'Svelte': 1
+      },
+      'q2': {
+        'MobX': 12,
+        'Redux': 4,
+        'Context API': 6,
+        'Zustand': 3
+      }
+    };
+    this.currentResults = mockResultsDb;
+  }
 
   selectOption(questionId, optionText) {
     this.selectedOptions[questionId] = optionText;

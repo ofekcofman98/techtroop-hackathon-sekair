@@ -6,6 +6,7 @@ import { AuthForm } from './components/AuthForm';
 import CreateSurvey from './pages/CreateSurvey';
 import Dashboard from './pages/Dashboard';
 import VoteSurvey from './pages/VoteSurvey';
+import SurveyResults from './pages/SurveyResults';
 import '@mantine/core/styles.css';
 import { Navbar } from './components/Navbar';
 
@@ -27,6 +28,7 @@ function App() {
               }
             />
             <Route path="/survey/:id" element={<VoteSurvey />} />
+            <Route path="/results/:id" element={<SurveyResults />} />
             <Route path="/login" element={<AuthForm />} />
             <Route
               path="/create"

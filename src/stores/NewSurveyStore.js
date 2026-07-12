@@ -93,7 +93,6 @@ submitSurvey = async () => {
 
       runInAction(() => {
         this.isSuccess = true;
-        // this.resetForm();
       });
       return true;
 

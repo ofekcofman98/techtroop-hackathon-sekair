@@ -27,7 +27,6 @@ const VoteSurvey = observer(() => {
     const success = await store.submitVote();
     if (success) {
       alert('Your vote has been recorded successfully!');
-      navigate('/');
     }
   };
 
@@ -40,7 +39,7 @@ const VoteSurvey = observer(() => {
     );
   }
 
-    if (store.isAnswered) {
+  if (store.isAnswered) {
     return (
       <Center style={{ height: '100vh' }}>
         <Container size="xs" ta="center">
@@ -50,6 +49,11 @@ const VoteSurvey = observer(() => {
           <Text size="sm" c="dimmed" mb="xl">
             Thank you for participating. You can only submit your answers once per survey.
           </Text>
+          <Button
+            variant="outline"
+            color="blue"
+            fullWidth
+            onClick={() => navigate(`/results/${id}`)}>View Results</Button>
         </Container>
       </Center>
     )
