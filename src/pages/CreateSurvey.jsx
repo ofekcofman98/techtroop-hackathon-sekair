@@ -20,7 +20,13 @@ const CreateSurvey = observer(() => {
       return;
     }
 
-    const success = await store.submitSurvey();
+    const userId = userStore.profile?.id;
+    if (!userId) {
+      alert('User profile not found. Please try logging in again.');
+      return;
+    }
+
+    const success = await store.submitSurvey(userId);
     if (success) {
       setTimeout(() => {
         navigate('/dashboard');
@@ -116,6 +122,6 @@ const CreateSurvey = observer(() => {
       )}
     </Container>
   );
-}); 
+});
 
 export default CreateSurvey;

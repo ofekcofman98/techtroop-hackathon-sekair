@@ -3,17 +3,17 @@ import { supabase } from '../services/supabaseClient';
 import { surveyService } from '../services/surveyService';
 
 export class NewSurveyStore {
-  constructor() {
-    this.title = '';
-    this.isAnonymous = false;
-    this.questions = [{ 
-        question_text: '', 
-        options: ['', '', '', ''] 
-    }];
-    this.isLoading = false;
-    this.error = null;
-    this.isSuccess = false;
+  title = '';
+  isAnonymous = false;
+  category = 'General';
+  questions = [
+    { question_text: '', options: ['', '', '', ''] }
+  ];
+  isLoading = false;
+  isSuccess = false;
+  error = null;
 
+  constructor() {
     makeObservable(this, {
       title: observable,
       isAnonymous: observable,
@@ -31,42 +31,57 @@ export class NewSurveyStore {
       resetForm: action
     });
   }
-  
+
   setTitle = (title) => {
-      this.title = title;
+    this.title = title;
   }
-  
+
   setIsAnonymous = (value) => {
     this.isAnonymous = value;
   }
 
   addQuestion = () => {
-    this.questions.push({ question_text: '', options: ['', '', '', ''] });
+    this.questions = [...this.questions, { question_text: '', options: ['', '', '', ''] }];
   }
 
   removeQuestion = (index) => {
     if (this.questions.length > 1) {
-      this.questions.splice(index, 1);
+      this.questions = this.questions.filter((_, i) => i !== index);
     }
   }
 
   updateQuestionText = (index, text) => {
-    this.questions[index].question_text = text;
+    const updatedQuestions = [...this.questions];
+    updatedQuestions[index] = {
+      ...updatedQuestions[index],
+      question_text: text
+    };
+    this.questions = updatedQuestions;
   }
 
   updateOptionText = (questionIndex, optionIndex, text) => {
-    this.questions[questionIndex].options[optionIndex] = text;
+    const updatedQuestions = [...this.questions];
+    const updatedOptions = [...updatedQuestions[questionIndex].options];
+
+    updatedOptions[optionIndex] = text;
+
+    updatedQuestions[questionIndex] = {
+      ...updatedQuestions[questionIndex],
+      options: updatedOptions
+    };
+
+    this.questions = updatedQuestions;
   }
 
-
-  submitSurvey = async () => {
+  submitSurvey = async (userId) => {
     this.isLoading = true;
     this.error = null;
 
     const surveyPayload = { 
         title: this.title, 
         is_anonymous: this.isAnonymous,
-        category: this.category || 'General'
+        category: this.category || 'General',
+        created_by: userId 
     };
 
     const questionsPayloadBuilder = (surveyId) => this.questions.map((q) => ({
