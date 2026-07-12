@@ -1,5 +1,6 @@
 import { observable, action, computed, makeObservable, runInAction } from 'mobx';
 import { supabase } from '../services/supabaseClient';
+import { surveyService } from '../services/surveyService';
 
 export class DashboardStore {
     surveys = [];
@@ -39,17 +40,15 @@ export class DashboardStore {
     async fetchSurveys() {
         this.isLoading = true;
         try {
-            const { data, error } = await supabase
-                .from('surveys')
-                .select('*');
-            if (error) throw error;
-
+            const data = await surveyService.getAllSurveys();
             runInAction(() => {
-                this.surveys = data || [];
+                this.surveys = data;
             });
-        } catch (err) {
+        } 
+        catch (err) {
             console.error('Error fetching surveys:', err.message);
-        } finally {
+        } 
+        finally {
             runInAction(() => {
                 this.isLoading = false;
             });
@@ -86,16 +85,10 @@ export class DashboardStore {
 
     async deleteSurvey(surveyId) {
         try {
-            const { error } = await supabase
-                .from('surveys')
-                .delete()
-                .eq('id', surveyId);
-
-            if (error) throw error;
-
-            runInAction(() => {
-                this.surveys = this.surveys.filter(survey => survey.id !== surveyId);
-            });
+            await surveyService.deleteSurvey(surveyId);
+                runInAction(() => {
+                    this.surveys = this.surveys.filter(survey => survey.id !== surveyId);
+                });        
         } 
         catch (err) {
             console.error('Error deleting survey:', err.message);

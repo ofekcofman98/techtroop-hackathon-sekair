@@ -1,5 +1,6 @@
 import { observable, action, makeObservable, runInAction } from 'mobx';
 import { supabase } from '../services/supabaseClient';
+import { surveyService } from '../services/surveyService';
 
 export class NewSurveyStore {
   constructor() {
@@ -58,58 +59,43 @@ export class NewSurveyStore {
   }
 
 
-submitSurvey = async () => {
+  submitSurvey = async () => {
     this.isLoading = true;
     this.error = null;
 
-    try {
-      const { data: surveyData, error: surveyError } = await supabase
-        .from('surveys')
-        .insert([
-          { 
-            title: this.title, 
-            is_anonymous: this.isAnonymous,
-            category: 'General'
-          }
-        ])
-        .select()
-        .single();
+    const surveyPayload = { 
+        title: this.title, 
+        is_anonymous: this.isAnonymous,
+        category: this.category || 'General'
+    };
 
-      if (surveyError) throw surveyError;
-
-      const surveyId = surveyData.id;
-
-      const questionsPayload = this.questions.map((q) => ({
+    const questionsPayloadBuilder = (surveyId) => this.questions.map((q) => ({
         survey_id: surveyId,
         question_text: q.question_text,
         options: q.options
-      }));
+    }));
 
-      const { error: questionsError } = await supabase
-        .from('questions')
-        .insert(questionsPayload);
+    try {
+        await surveyService.createSurvey(surveyPayload, questionsPayloadBuilder);
 
-      if (questionsError) throw questionsError;
-
+        runInAction(() => {
+            this.isSuccess = true;
+        });
+        return true;
+    } 
+    catch (err) {
+      console.error('🚨 Error creating survey:', err.message);
       runInAction(() => {
-        this.isSuccess = true;
-        // this.resetForm();
-      });
-      return true;
-
-    } catch (err) {
-      console.error('🚨 Error creating survey in Supabase:', err.message);
-      runInAction(() => {
-        this.error = err.message || 'Failed to create survey. Please try again.';
+          this.error = err.message || 'Failed to create survey. Please try again.';
       });
       return false;
-    } finally {
+    } 
+    finally {
       runInAction(() => {
-        this.isLoading = false;
+          this.isLoading = false;
       });
     }
-  }
-
+}
 
   resetForm = () => {
     this.title = '';
