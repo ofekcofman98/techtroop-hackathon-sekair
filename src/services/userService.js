@@ -1,6 +1,15 @@
 import { supabase } from './supabaseClient';
 
 export const userService = {
+  async getAllUsers() {
+    const {data, error} = await supabase
+      .from('profiles')
+      .select('*')
+
+    if (error) throw error;
+    return data;
+  },
+
   async getUserProfile(userId) {
     const { data, error } = await supabase
       .from('profiles')
@@ -24,7 +33,7 @@ export const userService = {
 
   async getUserVotes(userId) {
     const { data, error } = await supabase
-      .from('votes')
+      .from('responses')
       .select('survey_id')
       .eq('user_id', userId);
 

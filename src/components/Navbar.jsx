@@ -39,6 +39,15 @@ export const Navbar = observer(() => {
             >
               Dashboard
             </Button>
+
+            <Button 
+              variant="subtle" 
+              size="xs" 
+              leftSection={<IconLayoutDashboard size={14} />}
+              onClick={() => navigate('/users')}
+            >
+                Users
+            </Button>
           </Group>
 
           {/* User Profile Dropdown Menu */}

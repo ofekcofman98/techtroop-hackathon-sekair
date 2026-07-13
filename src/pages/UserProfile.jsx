@@ -1,60 +1,84 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Container, Title, Text, Grid, SimpleGrid, LoadingOverlay, Box, Divider, Stack } from '@mantine/core';
-import { IconFilePlus, IconChecklist } from '@tabler/icons-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Container, Title, Text, Grid, SimpleGrid, LoadingOverlay, Box, Divider, Button } from '@mantine/core';
+import { IconFilePlus, IconChecklist, IconArrowLeft } from '@tabler/icons-react';
 import { userStore } from '../stores/userStore';
 import { StatsCard } from '../components/StatsCard';
 import SurveyCard from '../components/SurveyCard';
 
 const UserProfile = observer(() => {
   const store = userStore;
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    store.fetchProfileDashboardData();
-  }, []);
+    store.fetchProfileDashboardData(id);
+  }, [id]);
+
+  const profile = store.displayedProfile;
+  const createdSurveys = store.displayedCreatedSurveys;
+  const answeredCount = store.displayedAnsweredSurveysCount;
+  const isOwnProfile = store.isViewingOwnProfile;
 
   return (
     <Box style={{ position: 'relative', minHeight: '80vh' }}>
       <LoadingOverlay visible={store.isProfileLoading} overlayProps={{ blur: 2 }} />
 
+      {!isOwnProfile && (
+        <Button
+            variant="outline"
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => navigate('/users')}
+        >
+            Back to Dashboard
+        </Button>
+    )}
+
       <Container size="lg" py="xl">
         <Box mb="xl">
           <Title order={2} c="blue" fw={800}>
-            {store.profile?.name || 'User Profile'}
+            {profile?.name || 'User Profile'}
           </Title>
           <Text size="sm" c="dimmed" mt="xs">
-            Account Role: <strong style={{ textTransform: 'uppercase' }}>{store.profile?.role || 'Student'}</strong>
+            Account Role: <strong style={{ textTransform: 'uppercase' }}>{profile?.role || 'Student'}</strong>
           </Text>
         </Box>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" mb="2xl">
           <StatsCard 
             title="Surveys Created"
-            value={store.createdSurveys?.length || 0}
-            label="Total surveys published by you"
+            value={createdSurveys?.length || 0}
+            label={isOwnProfile ? "Total surveys published by you" : `Total surveys published by ${profile?.name || 'this user'}`}
             color="blue"
             icon={IconFilePlus}
           />
           
           <StatsCard 
             title="Surveys Answered"
-            value={store.answeredSurveysCount}
-            label="Total unique surveys you voted on"
+            value={answeredCount}
+            label={isOwnProfile ? "Total unique surveys you voted on" : `Total unique surveys this user voted on`}
             color="teal"
             icon={IconChecklist}
           />
         </SimpleGrid>
 
-        <Divider my="xl" label="My Created Surveys Dashboard" labelPosition="center" />
+        <Divider 
+          my="xl" 
+          label={isOwnProfile ? "My Created Surveys Dashboard" : `${profile?.name || 'User'}'s Surveys Dashboard`} 
+          labelPosition="center" 
+        />
 
         <Box mt="lg">
-          {(store.createdSurveys || []).length === 0 ? (
+          {(createdSurveys || []).length === 0 ? (
             <Text ta="center" c="dimmed" fontStyle="italic" mt="xl">
-              You haven't created any surveys yet. Go ahead and make your first one!
+              {isOwnProfile 
+                ? "You haven't created any surveys yet. Go ahead and make your first one!"
+                : "This user hasn't created any surveys yet."}
             </Text>
           ) : (
             <Grid>
-              {store.createdSurveys.map((survey) => (
+              {createdSurveys.map((survey) => (
                 <Grid.Col key={survey.id} span={{ base: 12, sm: 6, md: 4 }}>
                   <SurveyCard survey={survey} />
                 </Grid.Col>

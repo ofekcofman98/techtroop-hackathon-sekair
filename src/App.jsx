@@ -11,6 +11,7 @@ import SurveyResults from './pages/SurveyResults';
 import '@mantine/core/styles.css';
 import { Navbar } from './components/Navbar';
 import UserProfile from './pages/UserProfile';
+import { UsersDashboard } from './pages/UsersDashboard';
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
             />
             <Route path="/survey/:id" element={<VoteSurvey />} />
             <Route path="/results/:id" element={<SurveyResults />} />
+            <Route 
+              path="/users" 
+              element={
+                <ProtectedRoute>
+                  <UsersDashboard />
+                </ProtectedRoute>
+              } 
+            />
             <Route
               path="/user/:id"
               element={
