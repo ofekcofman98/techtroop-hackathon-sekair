@@ -1,11 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { authService } from '../services/authService';
-import { supabase } from '../services/supabaseClient';
+import { userService } from '../services/userService';
 
 class UserStore {
   user = null;
   profile = null;
+  answeredSurveysCount = 0;
   isLoading = true;
+  isProfileLoading = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -18,9 +20,11 @@ class UserStore {
       if (currentUser) {
         await this.fetchUserProfile(currentUser);
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Auth initialization failed:", error.message);
-    } finally {
+    } 
+    finally {
       runInAction(() => {
         this.isLoading = false;
       });
@@ -29,20 +33,42 @@ class UserStore {
 
   async fetchUserProfile(authUser) {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
-
-      if (error) throw error;
+      const data = await userService.getUserProfile(authUser.id);
 
       runInAction(() => {
         this.user = authUser;
         this.profile = data;
       });
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching user profile:", error.message);
+    }
+  }
+
+  async fetchProfileDashboardData() {
+    if (!this.user) return;    
+    this.isProfileLoading = true;
+    
+    try {
+      const [createdSurveysData, votesData] = await Promise.all([
+        userService.getSurveysCreatedByUser(this.user.id),
+        userService.getUserVotes(this.user.id)
+      ]);
+
+      runInAction(() => {
+        this.createdSurveys = createdSurveysData;
+        
+        const uniqueSurveyIds = new Set(votesData.map(v => v.survey_id));
+        this.answeredSurveysCount = uniqueSurveyIds.size;
+      });
+    } 
+    catch (error) {
+      console.error("Failed to fetch profile dashboard data:", error.message);
+    } 
+    finally {
+      runInAction(() => {
+        this.isProfileLoading = false;
+      });
     }
   }
 

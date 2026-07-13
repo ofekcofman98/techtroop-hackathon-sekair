@@ -10,7 +10,6 @@ export const Navbar = observer(() => {
 
   const handleLogout = async () => {
     await userStore.logout();
-    // navigate('/login');
   };
 
   if (!userStore.isAuthenticated) {
@@ -67,7 +66,7 @@ export const Navbar = observer(() => {
                 <Menu.Label>Account Settings</Menu.Label>
                 <Menu.Item 
                   leftSection={<IconUser size={14} />}
-                  onClick={() => alert('Profile management is coming soon!')}
+                  onClick={() => navigate(`/user/${userStore.user?.id}`)}
                 >
                   My Profile
                 </Menu.Item>

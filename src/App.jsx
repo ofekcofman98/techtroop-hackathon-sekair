@@ -10,6 +10,7 @@ import VoteSurvey from './pages/VoteSurvey';
 import SurveyResults from './pages/SurveyResults';
 import '@mantine/core/styles.css';
 import { Navbar } from './components/Navbar';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
             />
             <Route path="/survey/:id" element={<VoteSurvey />} />
             <Route path="/results/:id" element={<SurveyResults />} />
+            <Route
+              path="/user/:id"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<AuthForm />} />
             <Route
               path="/create"
