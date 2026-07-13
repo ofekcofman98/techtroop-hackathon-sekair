@@ -6,6 +6,7 @@ import { IconFilePlus, IconChecklist, IconArrowLeft } from '@tabler/icons-react'
 import { userStore } from '../stores/userStore';
 import { StatsCard } from '../components/StatsCard';
 import SurveyCard from '../components/SurveyCard';
+import SurveyFilters from '../components/SurveyFilters';
 
 const UserProfile = observer(() => {
   const store = userStore;
@@ -69,6 +70,15 @@ const UserProfile = observer(() => {
           labelPosition="center" 
         />
 
+        <SurveyFilters 
+            searchQuery={store.searchQuery}
+            onSearchQueryChange={(val) => store.setSearchQuery(val)}
+            selectedCategory={store.selectedCategory}
+            onCategoryChange={(val) => store.setSelectedCategory(val)}
+            visibilityFilter={store.visibilityFilter}
+            onVisibilityFilterChange={(val) => store.setVisibilityFilter(val)}
+        />
+       
         <Box mt="lg">
           {(createdSurveys || []).length === 0 ? (
             <Text ta="center" c="dimmed" fontStyle="italic" mt="xl">

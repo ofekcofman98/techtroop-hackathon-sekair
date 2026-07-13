@@ -35,7 +35,14 @@ const Dashboard = observer(() => {
           </Button>
         </Flex>
 
-        <SurveyFilters />
+        <SurveyFilters 
+          searchQuery={store.searchQuery}
+          onSearchQueryChange={(val) => store.setSearchQuery(val)}
+          selectedCategory={store.selectedCategory}
+          onCategoryChange={(val) => store.setSelectedCategory(val)}
+          visibilityFilter={store.visibilityFilter}
+          onVisibilityFilterChange={(val) => store.setVisibilityFilter(val)}
+        />
 
         <Grid mt="lg">
           {store.filteredSurveys.map((survey) => (

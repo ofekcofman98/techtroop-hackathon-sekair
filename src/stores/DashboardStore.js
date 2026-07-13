@@ -1,5 +1,4 @@
 import { observable, action, computed, makeObservable, runInAction } from 'mobx';
-import { supabase } from '../services/supabaseClient';
 import { surveyService } from '../services/surveyService';
 
 export class DashboardStore {
@@ -79,7 +78,10 @@ export class DashboardStore {
                 q.question_text?.toLowerCase().includes(search)
             ) || false;
             
-            return matchesCategory && matchesVisibility && (matchesTitle || matchesQuestions);
+            // 4. Creator Filter
+            const matchesCreator = survey.profiles?.name?.toLowerCase().includes(search) || false;
+
+            return matchesCategory && matchesVisibility && (matchesTitle || matchesQuestions || matchesCreator);
         });
     }
 

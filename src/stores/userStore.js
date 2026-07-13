@@ -13,6 +13,10 @@ class UserStore {
   viewedAnsweredSurveysCount = 0;
   viewingOwn = true;
 
+  searchQuery = '';
+  selectedCategory = 'all';
+  visibilityFilter = 'all';
+
   isLoading = true;
   isProfileLoading = false;
 
@@ -41,7 +45,6 @@ class UserStore {
   async fetchUserProfile(authUser) {
     try {
       const data = await userService.getUserProfile(authUser.id);
-
       runInAction(() => {
         this.user = authUser;
         this.profile = data;
@@ -54,6 +57,7 @@ class UserStore {
 
   async fetchProfileDashboardData(targetUserId = null) {
     this.isProfileLoading = true;
+    
     this.viewedProfile = null;
     this.viewedCreatedSurveys = [];
     this.viewedAnsweredSurveysCount = 0;
@@ -86,9 +90,7 @@ class UserStore {
         if (isOwn) {
           this.createdSurveys = surveysData;
           this.answeredSurveysCount = answeredCount;
-          this.viewedProfile = null;
-        }
-        else {
+        } else {
           this.viewedCreatedSurveys = surveysData;
           this.viewedAnsweredSurveysCount = answeredCount;
           this.viewedProfile = externalProfileData;
@@ -105,12 +107,13 @@ class UserStore {
     }
   }
 
+  setSearchQuery(query) { this.searchQuery = query; }
+  setSelectedCategory(category) { this.selectedCategory = category; }
+  setVisibilityFilter(filter) { this.visibilityFilter = filter; }
+
+  
   get displayedProfile() {
     return this.viewingOwn ? this.profile : this.viewedProfile;
-  }
-
-  get displayedCreatedSurveys() {
-    return this.viewingOwn ? this.createdSurveys : this.viewedCreatedSurveys;
   }
 
   get displayedAnsweredSurveysCount() {
@@ -121,21 +124,50 @@ class UserStore {
     return this.viewingOwn;
   }
 
+  get displayedCreatedSurveys() {
+    const rawSurveys = this.viewingOwn ? this.createdSurveys : this.viewedCreatedSurveys;
+    
+    return rawSurveys.filter(survey => {
+      const currentSelected = this.selectedCategory.toLowerCase();
+      const surveyCategory = survey.category?.toLowerCase() || '';
+      const matchesCategory = currentSelected === 'all' || surveyCategory === currentSelected;
+      
+      let matchesVisibility = true;
+      if (this.visibilityFilter === 'public') {
+          matchesVisibility = survey.is_anonymous === false;
+      } else if (this.visibilityFilter === 'anonymous') {
+          matchesVisibility = survey.is_anonymous === true;
+      }
+
+      const search = this.searchQuery.toLowerCase().trim();
+      if (!search) return matchesCategory && matchesVisibility;
+
+      const matchesTitle = survey.title?.toLowerCase().includes(search) || false;
+      const matchesQuestions = survey.questions?.some(q => 
+          q.question_text?.toLowerCase().includes(search)
+      ) || false;
+      
+      return matchesCategory && matchesVisibility && (matchesTitle || matchesQuestions);
+    });
+  }
+
+  clearViewedProfile() {
+    this.viewedProfile = null;
+    this.viewedCreatedSurveys = [];
+    this.viewedAnsweredSurveysCount = 0;
+    this.viewingOwn = true;
+    this.searchQuery = '';
+    this.selectedCategory = 'all';
+    this.visibilityFilter = 'all';
+  }
 
   async login(email, password) {
     runInAction(() => { this.isLoading = true; });
     try {
       const data = await authService.signIn(email, password);
-      if (data?.user) {
-        await this.fetchUserProfile(data.user);
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      runInAction(() => { this.isLoading = false; });
-    }
+      if (data?.user) { await this.fetchUserProfile(data.user); }
+    } catch (error) { throw error; } finally { runInAction(() => { this.isLoading = false; }); }
   }
-
 
   async register(email, password, fullName) {
     runInAction(() => { this.isLoading = true; });
@@ -145,13 +177,8 @@ class UserStore {
         await authService.signIn(email, password);
         await this.fetchUserProfile(data.user);
       }
-    } catch (error) {
-      throw error;
-    } finally {
-      runInAction(() => { this.isLoading = false; });
-    }
+    } catch (error) { throw error; } finally { runInAction(() => { this.isLoading = false; }); }
   }
-
 
   async logout() {
     try {
@@ -160,18 +187,11 @@ class UserStore {
         this.user = null;
         this.profile = null;
       });
-    } catch (error) {
-      console.error("Logout failed:", error.message);
-    }
+    } catch (error) { console.error("Logout failed:", error.message); }
   }
 
-  get isAdmin() {
-    return this.profile?.role === 'admin';
-  }
-
-  get isAuthenticated() {
-    return !!this.user;
-  }
+  get isAdmin() { return this.profile?.role === 'admin'; }
+  get isAuthenticated() { return !!this.user; }
 }
 
 export const userStore = new UserStore();

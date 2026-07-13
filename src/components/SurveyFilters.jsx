@@ -7,8 +7,14 @@ import { CATEGORIES_CONFIG } from '../constants/categories';
 import { VISIBILITY_CONFIG } from '../constants/visibility';
 import { Categories } from './Categories';
 
-const SurveyFilters = observer(() => {
-  const store = dashboardStore;
+const SurveyFilters = observer(({
+  searchQuery,
+  onSearchQueryChange,
+  selectedCategory,
+  onCategoryChange,
+  visibilityFilter,
+  onVisibilityFilterChange
+}) => {
 
   const visibilityData = [
     { label: 'All Types', value: 'all' },
@@ -28,33 +34,33 @@ const SurveyFilters = observer(() => {
 
   return (
     <Box mb="xl">
-      <Stack spacing="md">
+      <Stack gap="md">
         <TextInput
-          placeholder="Search for a survey by title or question content..."
+          placeholder="Search for a survey by title, content or creator name..."
           leftSection={<IconSearch size={16} />}
-          value={store.searchQuery}
-          onChange={(e) => store.setSearchQuery(e.target.value)}
+          value={searchQuery}
+          onChange={(e) => onSearchQueryChange(e.target.value)}
           size="md"
           radius="md"
         />
 
         <Categories 
-          value={store.selectedCategory} 
-          onChange={(val) => store.setSelectedCategory(val)} 
+          value={selectedCategory} 
+          onChange={onCategoryChange} 
           showAll={true} 
         />
 
         <SegmentedControl
-            size="xs"
-            radius="md"
-            value={store.visibilityFilter}
-            onChange={(value) => store.setVisibilityFilter(value)}
-            data={visibilityData}
-            color={
-              store.visibilityFilter === 'anonymous' ? 'indigo' : 
-              store.visibilityFilter === 'public' ? 'teal' : 'blue'
-            }
-          />
+          size="xs"
+          radius="md"
+          value={visibilityFilter}
+          onChange={onVisibilityFilterChange}
+          data={visibilityData}
+          color={
+            visibilityFilter === 'anonymous' ? 'indigo' : 
+            visibilityFilter === 'public' ? 'teal' : 'blue'
+          }
+        />
       </Stack>
     </Box>
   );
