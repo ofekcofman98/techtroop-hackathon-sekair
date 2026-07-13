@@ -17,6 +17,9 @@ class UserStore {
   selectedCategory = 'all';
   visibilityFilter = 'all';
 
+  matches = [];
+  isMatchesLoading = false;
+
   isLoading = true;
   isProfileLoading = false;
 
@@ -192,6 +195,27 @@ class UserStore {
 
   get isAdmin() { return this.profile?.role === 'admin'; }
   get isAuthenticated() { return !!this.user; }
+
+  async loadSocialMatches() {
+    this.isMatchesLoading = true;
+    try {
+      const myId = this.profile?.id;
+      if (!myId) {
+        runInAction(() => { this.matches = []; });
+        return;
+      }
+      const data = await userService.getSocialMatches(myId);
+      runInAction(() => {
+        this.matches = data;
+      });
+    } catch (err) {
+      console.error('Failed to load social matches:', err);
+    } finally {
+      runInAction(() => {
+        this.isMatchesLoading = false;
+      });
+    }
+  }
 }
 
 export const userStore = new UserStore();
