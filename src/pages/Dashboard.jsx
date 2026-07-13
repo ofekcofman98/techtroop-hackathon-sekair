@@ -6,12 +6,14 @@ import { IconPlus, IconCheck } from '@tabler/icons-react';
 import SurveyFilters from '../components/SurveyFilters';
 import { dashboardStore } from '../stores/DashboardStore';
 import SurveyCard from '../components/SurveyCard';
+import { voteSurveyStore } from '../stores/voteSurveyStore';
 
 const Dashboard = observer(() => {
   const store = dashboardStore;
   const navigate = useNavigate();
 
   useEffect(() => {
+    voteSurveyStore.resetAnsweredSurveys();
     store.fetchSurveys();
   }, [store]);
 

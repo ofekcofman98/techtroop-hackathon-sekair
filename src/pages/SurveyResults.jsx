@@ -14,7 +14,7 @@ const SurveyResults = observer(() => {
         store.loadResults(id);
     }, [id]);
 
-    if (store.isLoading || !store.currentSurvey || !store.currentResults) {
+    if (store.isLoading || !store.currentSurvey) {
         return (
             <Center style={{ height: '100vh' }}>
                 <Loader size="xl" />
@@ -23,6 +23,10 @@ const SurveyResults = observer(() => {
     }
 
     function getTotalVotesForQuestion(questionId) {
+        if (!store.currentResults) {
+            return 0;
+        }
+
         const allAnswers = store.currentResults[questionId];
         if (!allAnswers) {
             return 0;
@@ -36,14 +40,14 @@ const SurveyResults = observer(() => {
         return total;
     }
 
-    function renderAnswerRow(answerText, allAnswers, totalVotes){
+    function renderAnswerRow(answerText, allAnswers, totalVotes) {
         let votesForAnswer = 0;
-        if(allAnswers && allAnswers[answerText]){
+        if (allAnswers && allAnswers[answerText]) {
             votesForAnswer = allAnswers[answerText];
         }
         let percent = 0;
-        if(totalVotes > 0){
-            percent = Math.round((votesForAnswer / totalVotes) * 100) ;
+        if (totalVotes > 0) {
+            percent = Math.round((votesForAnswer / totalVotes) * 100);
         }
         return (
             <Box key={answerText} mb="sm">
@@ -54,18 +58,18 @@ const SurveyResults = observer(() => {
                     </Text>
                 </Group>
 
-                <Progress 
-                    value={percent} 
-                    color="blue" 
-                    size="md" 
-                    radius="sm" 
+                <Progress
+                    value={percent}
+                    color="blue"
+                    size="md"
+                    radius="sm"
                 />
             </Box>
         );
     }
 
     function renderQuestionCard(question) {
-        const allAnswers = store.currentResults[question.id];
+        const allAnswers = store.currentResults ? store.currentResults[question.id] : null;
         const totalVotes = getTotalVotesForQuestion(question.id)
 
         return (
@@ -76,7 +80,7 @@ const SurveyResults = observer(() => {
 
                 <Stack spacing="xs">
                     {question.options.map((answerText) => {
-                        return renderAnswerRow(answerText, allAnswers, totalVotes); 
+                        return renderAnswerRow(answerText, allAnswers, totalVotes);
                     })}
                 </Stack>
             </Card>
@@ -84,16 +88,21 @@ const SurveyResults = observer(() => {
 
     }
 
+    const creatorName = store.currentSurvey.profiles?.name || 'Unknown User';
+
     return (
         <Container size="sm" py="xl">
             <Title order={2} c="blue" ta="center" mb="xl">
                 {store.currentSurvey.title} - Results
             </Title>
+            <Text size="sm" c="dimmed" ta="center" mb="xl">
+                Created by: {creatorName}
+            </Text>
 
             <Stack spacing="lg">
                 {store.currentSurvey.questions.map(renderQuestionCard)}
 
-                <Button variant="outline" fullWidth onClick={() => navigate('/')}>
+                <Button variant="outline" fullWidth onClick={() => navigate('/dashboard')}>
                     Back to Dashboard
                 </Button>
             </Stack>

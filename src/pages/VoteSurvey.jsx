@@ -15,6 +15,12 @@ const VoteSurvey = observer(() => {
     store.loadSurvey(id);
   }, [id]);
 
+  useEffect(() => {
+    if (store.isAnswered) {
+      navigate(`/results/${id}`);
+    }
+  }, [store.isAnswered, id, navigate]);
+
   const handleVoteSubmit = async () => {
     const totalQuestions = store.currentSurvey.questions.length;
     const answeredQuestions = Object.keys(store.selectedOptions).length;
@@ -26,7 +32,7 @@ const VoteSurvey = observer(() => {
 
     const success = await store.submitVote();
     if (success) {
-      alert('Your vote has been recorded successfully!');
+      navigate(`/results/${id}`);
     }
   };
 
@@ -40,27 +46,12 @@ const VoteSurvey = observer(() => {
   }
 
   if (store.isAnswered) {
-    return (
-      <Center style={{ height: '100vh' }}>
-        <Container size="xs" ta="center">
-          <Title order={3} c="blue" mb="sm">
-            You have already voted!
-          </Title>
-          <Text size="sm" c="dimmed" mb="xl">
-            Thank you for participating. You can only submit your answers once per survey.
-          </Text>
-          <Button
-            variant="outline"
-            color="blue"
-            fullWidth
-            onClick={() => navigate(`/results/${id}`)}>View Results</Button>
-        </Container>
-      </Center>
-    )
+    return null;
   }
 
+  const creatorName = store.currentSurvey.profiles?.name || 'Unknown User';
 
-return (
+  return (
     <Container size="sm" py="xl">
       <Flex justify="space-between" align="center" mb="lg" wrap="nowrap" gap="md">
         <Title order={2} c="blue">
@@ -76,6 +67,9 @@ return (
       </Flex>
 
       <Box mb="xl">
+        <Text size="sm" c="dimmed" mb="xs">
+          Created by: {creatorName}
+        </Text>
         <Text size="sm" c="dimmed">
           {store.currentSurvey.is_anonymous ? "🔒 This survey is anonymous" : "📢 Your vote will be public"}
         </Text>

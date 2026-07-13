@@ -23,7 +23,8 @@ export class VoteSurveyStore {
       loadResults: action,
       loadSurvey: action,
       selectOption: action,
-      submitVote: action
+      submitVote: action,
+      resetAnsweredSurveys: action
     });
   }
 
@@ -46,12 +47,23 @@ export class VoteSurveyStore {
 
       if (error) throw error;
 
-      return data && data.length > 0;
+      const hasVoted = data && data.length > 0;
+      if (hasVoted) {
+        runInAction(() => {
+          if (!this.answeredSurveys.includes(surveyId)) {
+            this.answeredSurveys.push(surveyId);
+          }
+        });
+      }
+
+      return hasVoted;
+
     } catch (err) {
       console.error('Error checking user response:', err.message);
       return false;
     }
   }
+
 
   async loadSurvey(surveyId) {
     this.isLoading = true;
@@ -69,13 +81,16 @@ export class VoteSurveyStore {
             id,
             question_text,
             options
+          ),
+          profiles (
+            name
           )
         `)
         .eq('id', surveyId)
         .single();
 
       if (error) throw error;
-      
+
       const isVoted = await this.checkIfUserAnswered(surveyId);
 
       runInAction(() => {
@@ -84,7 +99,8 @@ export class VoteSurveyStore {
           title: data.title,
           is_anonymous: data.is_anonymous,
           category: data.category,
-          questions: data.questions || []
+          questions: data.questions || [],
+          profiles: data.profiles
         };
 
         if (isVoted || this.answeredSurveys.indexOf(surveyId) !== -1) {
@@ -145,6 +161,13 @@ export class VoteSurveyStore {
         this.isLoading = false;
       });
     }
+  }
+
+  resetAnsweredSurveys() {
+    runInAction(() => {
+      this.answeredSurveys = [];
+      this.isAnswered = false;
+    });
   }
 
   selectOption(questionId, optionText) {
