@@ -90,8 +90,7 @@ class UserStore {
   }
 
   get isAdmin() {
-    return true;
-    // return this.profile?.role === 'admin';
+    return this.profile?.role === 'admin';
   }
 
   get isAuthenticated() {
