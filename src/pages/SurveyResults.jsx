@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Title, Card, Text, Button, Stack, Loader, Center, Box, Progress, Group } from '@mantine/core';
-import { voteSurveyStore } from '../stores/VoteSurveyStore';
+import { voteSurveyStore } from '../stores/voteSurveyStore';
 
 const SurveyResults = observer(() => {
     const store = voteSurveyStore;

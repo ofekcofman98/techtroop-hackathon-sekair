@@ -1,5 +1,6 @@
 import { observable, action, makeObservable, runInAction } from 'mobx';
 import { supabase } from '../services/supabaseClient';
+import { userStore } from './userStore';
 
 export class VoteSurveyStore {
   currentSurvey = null;
@@ -26,6 +27,32 @@ export class VoteSurveyStore {
     });
   }
 
+  async checkIfUserAnswered(surveyId) {
+    let userIdVal = null;
+    if (userStore.profile) {
+      userIdVal = userStore.profile.id;
+    }
+
+    if (!userIdVal) {
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('responses')
+        .select('id')
+        .eq('survey_id', surveyId)
+        .eq('user_id', userIdVal);
+
+      if (error) throw error;
+
+      return data && data.length > 0;
+    } catch (err) {
+      console.error('Error checking user response:', err.message);
+      return false;
+    }
+  }
+
   async loadSurvey(surveyId) {
     this.isLoading = true;
     this.isAnswered = false;
@@ -48,6 +75,8 @@ export class VoteSurveyStore {
         .single();
 
       if (error) throw error;
+      
+      const isVoted = await this.checkIfUserAnswered(surveyId);
 
       runInAction(() => {
         this.currentSurvey = {
@@ -58,7 +87,7 @@ export class VoteSurveyStore {
           questions: data.questions || []
         };
 
-        if (this.answeredSurveys.indexOf(surveyId) !== -1) {
+        if (isVoted || this.answeredSurveys.indexOf(surveyId) !== -1) {
           this.isAnswered = true;
         } else {
           this.isAnswered = false;
@@ -90,8 +119,8 @@ export class VoteSurveyStore {
 
       data.forEach(row => {
         const questId = row.question_id;
-       const question = this.currentSurvey?.questions.find(q => q.id === questId);
-       const optionAns = question && question.options ? question.options[row.chosen_option_index] : null;
+        const question = this.currentSurvey?.questions.find(q => q.id === questId);
+        const optionAns = question && question.options ? question.options[row.chosen_option_index] : null;
         if (optionAns) {
           if (!processedResults[questId]) {
             processedResults[questId] = {};
@@ -104,7 +133,7 @@ export class VoteSurveyStore {
           processedResults[questId][optionAns] += 1;
         }
       });
-      
+
       runInAction(() => {
         this.currentResults = processedResults;
       });
@@ -124,17 +153,22 @@ export class VoteSurveyStore {
 
   async submitVote() {
     this.isSubmitting = true;
-
     const rowsToInsert = [];
+
     for (const questionId in this.selectedOptions) {
       const optionText = this.selectedOptions[questionId];
       const question = this.currentSurvey.questions.find(q => q.id === questionId);
       const optionIndex = question ? question.options.indexOf(optionText) : -1;
+      let userIdVal = null;
+      if (userStore.profile) {
+        userIdVal = userStore.profile.id;
+      }
 
       rowsToInsert.push({
         survey_id: this.currentSurvey.id,
         question_id: questionId,
-        chosen_option_index: optionIndex
+        chosen_option_index: optionIndex,
+        user_id: userIdVal
       });
     }
 

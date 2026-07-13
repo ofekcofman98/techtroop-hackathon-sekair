@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Title, Card, Text, Radio, Button, Stack, Loader, Center, Box, Flex } from '@mantine/core';
 import { IconCheck, IconArrowLeft } from '@tabler/icons-react';
 import { QuestionVoteCard } from '../components/QuestionVoteCard';
-import { voteSurveyStore } from '../stores/VoteSurveyStore';
+import { voteSurveyStore } from '../stores/voteSurveyStore';
 
 const VoteSurvey = observer(() => {
   const store = voteSurveyStore;

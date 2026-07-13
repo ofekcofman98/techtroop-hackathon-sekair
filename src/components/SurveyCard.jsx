@@ -4,7 +4,7 @@ import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, F
 import { IconCheck, IconTrash, IconLock, IconWorld } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { userStore } from '../stores/userStore';
-import { dashboardStore } from '../stores/DashboardStore';
+import { dashboardStore } from '../stores/dashboardStore';
 import { getCategoryColor } from '../constants/categories';
 import { SurveyVisibilityBadge } from './SurveyVisibiltyBadge';
 
@@ -17,6 +17,7 @@ const SurveyCard = ({ survey }) => {
         dashboardStore.deleteSurvey(survey.id);
         }
     };
+    const creatorName = survey.profiles?.name || 'Unknown User';
 
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder h="100%">
@@ -31,7 +32,7 @@ const SurveyCard = ({ survey }) => {
                             <SurveyVisibilityBadge isAnonymous={survey.is_anonymous} />
                         </Group>
 
-                        {userStore.isAdmin && (
+                        {(userStore.isAdmin || userStore.user?.id === survey.created_by) && (
                             <ActionIcon 
                                 color="red" 
                                 variant="subtle" 
@@ -48,7 +49,7 @@ const SurveyCard = ({ survey }) => {
                   </Text>
                   
                   <Text size="xs" c="dimmed" mt="xs">
-                        Created by: Classmate
+                        Created by: {creatorName}
                   </Text>
                 </Box>
 

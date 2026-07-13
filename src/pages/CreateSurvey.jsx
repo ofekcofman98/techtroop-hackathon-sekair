@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Container, Title, TextInput, Switch, Button, Card, Text, ActionIcon, Stack, Group, Divider, Flex, Center } from '@mantine/core';
 import { IconTrash, IconPlus, IconSend, IconArrowLeft } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { newSurveyStore } from '../stores/NewSurveyStore';
+import { newSurveyStore } from '../stores/newSurveyStore';
 import { SurveySettingsCard } from '../components/SurveySettingCard';
 import { QuestionFormCard } from '../components/QuestionFormCard';
 import { userStore } from '../stores/userStore';
