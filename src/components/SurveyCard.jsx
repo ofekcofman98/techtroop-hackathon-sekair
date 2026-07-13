@@ -1,7 +1,7 @@
-import React, { useState ,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, Flex, ActionIcon } from '@mantine/core';
-import { IconCheck, IconTrash, IconLock, IconWorld } from '@tabler/icons-react';
+import { IconCheck, IconTrash, IconShare } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { userStore } from '../stores/userStore';
 import { dashboardStore } from '../stores/dashboardStore';
@@ -29,6 +29,18 @@ const SurveyCard = observer(({ survey }) => {
         }
     };
 
+    const handleShare = (e) => {
+        e.stopPropagation();
+        const surveyUrl = window.location.origin + "/survey/" + survey.id;
+        const messageText = "Hey! I invite you to take my survey: " + survey.title + " on SekAir. Click here to answer: " + surveyUrl;
+        const protocol = "https://";
+        const domain = "api.whatsapp.com";
+        const route = "/send";
+        const queryParam = "?text=";
+        const fullLink = protocol + domain + route + queryParam + encodeURIComponent(messageText);
+        window.open(fullLink, "_blank");
+    };
+
     function handleSurveyClick() {
         if (hasVoted) {
             navigate(`/results/${survey.id}`);
@@ -37,31 +49,42 @@ const SurveyCard = observer(({ survey }) => {
         }
     }
 
-    const creatorName = survey.profiles?.name || survey.profiles?.username ||'Unknown User';
+    const creatorName = survey.profiles?.name || survey.profiles?.username || 'Unknown User';
 
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder h="100%">
             <Stack justify="space-between" h="100%">
                 <Box>
-                    <Group justify="space-between" mb="xs">
+                    <Group justify="space-between" mb="xs" wrap="nowrap">
                         <Badge color={getCategoryColor(survey.category)} variant="light">
                             {survey.category}
                         </Badge>
 
-                        <Group gap="xs" mt="sm">
-                            <SurveyVisibilityBadge isAnonymous={survey.is_anonymous} />
-                        </Group>
-
-                        {(userStore.isAdmin || userStore.user?.id === survey.created_by) && (
+                        <Group gap="xs">
                             <ActionIcon
-                                color="red"
+                                color="green"
                                 variant="subtle"
-                                onClick={handleDelete}
-                                title="Delete Survey"
+                                onClick={handleShare}
+                                title="Share on WhatsApp"
                             >
-                                <IconTrash size={18} />
+                                <IconShare size={18} />
                             </ActionIcon>
-                        )}
+
+                            {(userStore.isAdmin || userStore.user?.id === survey.created_by) && (
+                                <ActionIcon
+                                    color="red"
+                                    variant="subtle"
+                                    onClick={handleDelete}
+                                    title="Delete Survey"
+                                >
+                                    <IconTrash size={18} />
+                                </ActionIcon>
+                            )}
+                        </Group>
+                    </Group>
+
+                    <Group gap="xs" mt="sm">
+                        <SurveyVisibilityBadge isAnonymous={survey.is_anonymous} />
                     </Group>
 
                     <Text fw={600} size="lg" mt="sm" lh="sm">

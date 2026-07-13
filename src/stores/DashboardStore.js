@@ -89,7 +89,7 @@ export class DashboardStore {
         try {
             await surveyService.deleteSurvey(surveyId);
                 runInAction(() => {
-                    this.surveys = this.surveys.filter(survey => survey.id !== surveyId);
+                    this.surveys = [...this.surveys.filter(survey => survey.id !== surveyId)];
                 });        
         } 
         catch (err) {

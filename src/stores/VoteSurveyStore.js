@@ -135,18 +135,18 @@ export class VoteSurveyStore {
 
       data.forEach(row => {
         const questId = row.question_id;
-        const question = this.currentSurvey?.questions.find(q => q.id === questId);
-        const optionAns = question && question.options ? question.options[row.chosen_option_index] : null;
-        if (optionAns) {
+        const optIndex = row.chosen_option_index;
+        
+        if (optIndex !== null && optIndex !== undefined) {
           if (!processedResults[questId]) {
             processedResults[questId] = {};
           }
 
-          if (!processedResults[questId][optionAns]) {
-            processedResults[questId][optionAns] = 0;
+          if (!processedResults[questId][optIndex]) {
+            processedResults[questId][optIndex] = 0;
           }
 
-          processedResults[questId][optionAns] += 1;
+          processedResults[questId][optIndex] += 1;
         }
       });
 
@@ -170,8 +170,8 @@ export class VoteSurveyStore {
     });
   }
 
-  selectOption(questionId, optionText) {
-    this.selectedOptions[questionId] = optionText;
+  selectOption(questionId, clickedIndex) {
+    this.selectedOptions[questionId] = parseInt(clickedIndex);
   }
 
   async submitVote() {
@@ -179,9 +179,7 @@ export class VoteSurveyStore {
     const rowsToInsert = [];
 
     for (const questionId in this.selectedOptions) {
-      const optionText = this.selectedOptions[questionId];
-      const question = this.currentSurvey.questions.find(q => q.id === questionId);
-      const optionIndex = question ? question.options.indexOf(optionText) : -1;
+      const optionIndex = this.selectedOptions[questionId];
       let userIdVal = null;
       if (userStore.profile) {
         userIdVal = userStore.profile.id;

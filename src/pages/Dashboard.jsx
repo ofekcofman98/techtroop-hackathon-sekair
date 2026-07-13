@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Title, Grid, Card, Text, Badge, Group, Button, Stack, Box, Flex, Loader, LoadingOverlay } from '@mantine/core';
 import { IconPlus, IconCheck } from '@tabler/icons-react';
 import SurveyFilters from '../components/SurveyFilters';
-import { dashboardStore } from '../stores/DashboardStore';
+import { dashboardStore } from '../stores/dashboardStore';
 import SurveyCard from '../components/SurveyCard';
 import { voteSurveyStore } from '../stores/voteSurveyStore';
 
@@ -15,7 +15,7 @@ const Dashboard = observer(() => {
   useEffect(() => {
     voteSurveyStore.resetAnsweredSurveys();
     store.fetchSurveys();
-  }, [store]);
+  }, []);
 
   return (
     <Box style={{ position: 'relative', minHeight: '100vh' }}>
