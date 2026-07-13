@@ -17,6 +17,7 @@ const SurveyCard = ({ survey }) => {
         dashboardStore.deleteSurvey(survey.id);
         }
     };
+    const creatorName = survey.profiles?.name || 'Unknown User';
 
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder h="100%">
@@ -48,7 +49,7 @@ const SurveyCard = ({ survey }) => {
                   </Text>
                   
                   <Text size="xs" c="dimmed" mt="xs">
-                        Created by: Classmate
+                        Created by: {creatorName}
                   </Text>
                 </Box>
 

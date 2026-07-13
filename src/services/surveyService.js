@@ -5,8 +5,13 @@ export const surveyService = {
     async getAllSurveys() {
         const { data, error } = await supabase
         .from('surveys')
-        .select('*');
-        
+        .select(`
+            *,
+            profiles:created_by (
+                name
+            )
+        `);
+                
         if (error) throw error;
         return data || [];
     },
