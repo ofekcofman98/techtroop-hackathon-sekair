@@ -80,7 +80,7 @@ const VoteSurvey = observer(() => {
           <QuestionVoteCard
             key={question.id}
             question={question}
-            selectedValue={store.selectedOptions[question.id] || ''}
+            selectedValue={store.selectedOptions[question.id] !== undefined ? store.selectedOptions[question.id] : null}
             onSelect={(value) => store.selectOption(question.id, value)}
           />
         ))}

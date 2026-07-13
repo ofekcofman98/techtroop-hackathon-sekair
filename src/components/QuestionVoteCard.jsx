@@ -8,12 +8,12 @@ export const QuestionVoteCard = ({ question, selectedValue, onSelect }) => {
         {question.question_text}
       </Text>
 
-      <Radio.Group value={selectedValue} onChange={onSelect}>
+      <Radio.Group value={selectedValue?.toString()} onChange={onSelect}>
         <Stack spacing="xs">
           {question.options.map((option, index) => (
             <Radio 
               key={index} 
-              value={option} 
+              value={index.toString()} 
               label={option} 
             />
           ))}

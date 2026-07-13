@@ -40,21 +40,21 @@ const SurveyResults = observer(() => {
         return total;
     }
 
-    function renderAnswerRow(answerText, allAnswers, totalVotes) {
+    function renderAnswerRow(answerText, index, allAnswers, totalVotes) {
         let votesForAnswer = 0;
-        if (allAnswers && allAnswers[answerText]) {
-            votesForAnswer = allAnswers[answerText];
+        if (allAnswers && allAnswers[index]) {
+            votesForAnswer = allAnswers[index];
         }
         let percent = 0;
         if (totalVotes > 0) {
             percent = Math.round((votesForAnswer / totalVotes) * 100);
         }
         return (
-            <Box key={answerText} mb="sm">
+            <Box key={index} mb="sm">
                 <Group justify="space-between" mb={5}>
                     <Text size="sm" weight={500}>{answerText}</Text>
                     <Text size="xs" c="dimmed">
-                        {votesForAnswer} votes
+                        {votesForAnswer} votes ({percent}%)
                     </Text>
                 </Group>
 
@@ -79,8 +79,8 @@ const SurveyResults = observer(() => {
                 </Text>
 
                 <Stack spacing="xs">
-                    {question.options.map((answerText) => {
-                        return renderAnswerRow(answerText, allAnswers, totalVotes);
+                    {question.options.map((answerText, index) => {
+                        return renderAnswerRow(answerText, index, allAnswers, totalVotes);
                     })}
                 </Stack>
             </Card>
