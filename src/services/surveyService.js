@@ -85,13 +85,20 @@ export const surveyService = {
     async getSurveyResponses(surveyId) {
         const { data, error } = await supabase
             .from('responses')
-            .select('question_id, chosen_option_index')
+            .select(`
+                question_id, 
+                chosen_option_index,
+                user_id,
+                profiles:user_id (
+                    name
+                )
+            `)
             .eq('survey_id', surveyId);
 
         if (error) throw error;
         return data || [];
     },
-
+    
     async submitResponses(rowsToInsert) {
         const { error } = await supabase
             .from('responses')

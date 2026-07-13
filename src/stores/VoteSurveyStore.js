@@ -105,17 +105,25 @@ export class VoteSurveyStore {
       data.forEach(row => {
         const questId = row.question_id;
         const optIndex = row.chosen_option_index;
-        
+        const voterName = row.profiles?.name || 'Anonymous';
+
         if (optIndex !== null && optIndex !== undefined) {
           if (!processedResults[questId]) {
             processedResults[questId] = {};
           }
 
           if (!processedResults[questId][optIndex]) {
-            processedResults[questId][optIndex] = 0;
+            processedResults[questId][optIndex] = {
+              count: 0,
+              voters: []
+            };
           }
 
           processedResults[questId][optIndex] += 1;
+
+          if (voterName && !processedResults[questId][optIndex].voters.includes(voterName)) {
+            processedResults[questId][optIndex].voters.push(voterName);
+          }
         }
       });
 
@@ -123,9 +131,11 @@ export class VoteSurveyStore {
         this.currentResults = processedResults;
       });
 
-    } catch (err) {
+    } 
+    catch (err) {
       console.error(' Error loading live results from Supabase:', err.message);
-    } finally {
+    } 
+    finally {
       runInAction(() => {
         this.isLoading = false;
       });

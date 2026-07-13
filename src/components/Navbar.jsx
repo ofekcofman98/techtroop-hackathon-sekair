@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Group, Button, Text, Menu, Avatar, UnstyledButton } from '@mantine/core';
-import { IconLogout, IconUser, IconLayoutDashboard } from '@tabler/icons-react';
+import { IconLogout, IconUser, IconLayoutDashboard, IconHeartHandshake } from '@tabler/icons-react';
 import { userStore } from '../stores/userStore';
 
 export const Navbar = observer(() => {
@@ -43,10 +43,19 @@ export const Navbar = observer(() => {
             <Button 
               variant="subtle" 
               size="xs" 
-              leftSection={<IconLayoutDashboard size={14} />}
+              leftSection={<IconUser size={14} />}
               onClick={() => navigate('/users')}
             >
                 Users
+            </Button>
+
+            <Button 
+              variant="subtle" 
+              size="xs" 
+              leftSection={<IconHeartHandshake size={14} />}
+              onClick={() => navigate('/matches')}
+            >
+                My Matches
             </Button>
           </Group>
 

@@ -12,6 +12,7 @@ import '@mantine/core/styles.css';
 import { Navbar } from './components/Navbar';
 import UserProfile from './pages/UserProfile';
 import { UsersDashboard } from './pages/UsersDashboard';
+import { SocialMatches } from './pages/SocialMatches';
 
 function App() {
   return (
@@ -47,6 +48,14 @@ function App() {
                   <UserProfile />
                 </ProtectedRoute>
               }
+            />
+            <Route 
+              path="/matches" 
+              element={
+                <ProtectedRoute>
+                  <SocialMatches />
+                </ProtectedRoute>
+              } 
             />
             <Route path="/login" element={<AuthForm />} />
             <Route

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Title, Card, Text, Button, Stack, Loader, Center, Box, Progress, Group } from '@mantine/core';
+import { Container, Title, Card, Text, Button, Stack, Loader, Center, Box, Progress, Group, Badge } from '@mantine/core';
 import { voteSurveyStore } from '../stores/voteSurveyStore';
 
 const SurveyResults = observer(() => {
@@ -35,20 +35,27 @@ const SurveyResults = observer(() => {
         const values = Object.values(allAnswers);
 
         for (let i = 0; i < values.length; i++) {
-            total += values[i];
+            total += values[i].count;
         }
         return total;
     }
 
     function renderAnswerRow(answerText, index, allAnswers, totalVotes) {
         let votesForAnswer = 0;
+        let voters = [];
+
         if (allAnswers && allAnswers[index]) {
-            votesForAnswer = allAnswers[index];
+            votesForAnswer = allAnswers[index].count;
+            voters = allAnswers[index].voters || [];
         }
+
         let percent = 0;
         if (totalVotes > 0) {
             percent = Math.round((votesForAnswer / totalVotes) * 100);
         }
+
+        const isAnonymous = store.currentSurvey.is_anonymous;
+
         return (
             <Box key={index} mb="sm">
                 <Group justify="space-between" mb={5}>
@@ -64,17 +71,28 @@ const SurveyResults = observer(() => {
                     size="md"
                     radius="sm"
                 />
+
+                {!isAnonymous && voters.length > 0 && (
+                    <Group gap="xs" mt={4}>
+                        <Text size="xs" c="dimmed">Voted by:</Text>
+                        {voters.map((voterName, i) => (
+                            <Badge key={i} variant="light" size="xs" color="gray">
+                                {voterName}
+                            </Badge>
+                        ))}
+                    </Group>
+                )}
             </Box>
         );
     }
 
     function renderQuestionCard(question) {
         const allAnswers = store.currentResults ? store.currentResults[question.id] : null;
-        const totalVotes = getTotalVotesForQuestion(question.id)
+        const totalVotes = getTotalVotesForQuestion(question.id);
 
         return (
             <Card key={question.id} shadow="sm" padding="md" radius="md" withBorder mb="md">
-                <Text weight={500} mb="md">
+                <Text fw={500} mb="md">
                     {question.question_text}
                 </Text>
 
@@ -85,7 +103,6 @@ const SurveyResults = observer(() => {
                 </Stack>
             </Card>
         );
-
     }
 
     const creatorName = store.currentSurvey.profiles?.name || 'Unknown User';
@@ -95,9 +112,14 @@ const SurveyResults = observer(() => {
             <Title order={2} c="blue" ta="center" mb="xl">
                 {store.currentSurvey.title} - Results
             </Title>
-            <Text size="sm" c="dimmed" ta="center" mb="xl">
-                Created by: {creatorName}
-            </Text>
+            <Group justify="center" gap="sm" mb="xl">
+                <Text size="sm" c="dimmed">
+                    Created by: <b>{creatorName}</b>
+                </Text>
+                <Badge color={store.currentSurvey.is_anonymous ? 'red' : 'green'} variant="light">
+                    {store.currentSurvey.is_anonymous ? 'Anonymous Poll' : 'Public Poll'}
+                </Badge>
+            </Group>
 
             <Stack spacing="lg">
                 {store.currentSurvey.questions.map(renderQuestionCard)}
