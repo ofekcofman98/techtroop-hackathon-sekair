@@ -8,16 +8,18 @@ import CreateSurvey from './pages/CreateSurvey';
 import Dashboard from './pages/Dashboard';
 import VoteSurvey from './pages/VoteSurvey';
 import SurveyResults from './pages/SurveyResults';
-import '@mantine/core/styles.css';
 import { Navbar } from './components/Navbar';
 import UserProfile from './pages/UserProfile';
 import { UsersDashboard } from './pages/UsersDashboard';
 import { SocialMatches } from './pages/SocialMatches';
 
+import '@mantine/core/styles.css';
+import { theme } from './theme';
+
 function App() {
   return (
     <>
-      <MantineProvider defaultColorScheme="light">
+      <MantineProvider theme={theme} defaultColorScheme="light">
         <BrowserRouter>
           <Navbar/>
           <Routes>
