@@ -35,10 +35,6 @@ export class VoteSurveyStore {
 
     try {
       const hasVoted = await surveyService.checkIfUserAnswered(surveyId, userIdVal);
-
-      if (error) throw error;
-
-      const hasVoted = data && data.length > 0;
       if (hasVoted) {
         runInAction(() => {
           if (!this.answeredSurveys.includes(surveyId)) {
@@ -61,10 +57,6 @@ export class VoteSurveyStore {
 
     try {
       const data = await surveyService.getSurveyById(surveyId);
-      const isVoted = await this.checkIfUserAnswered(surveyId);
-
-      if (error) throw error;
-
       const isVoted = await this.checkIfUserAnswered(surveyId);
 
       runInAction(() => {
@@ -119,7 +111,7 @@ export class VoteSurveyStore {
             };
           }
 
-          processedResults[questId][optIndex] += 1;
+          processedResults[questId][optIndex].count += 1;
 
           if (voterName && !processedResults[questId][optIndex].voters.includes(voterName)) {
             processedResults[questId][optIndex].voters.push(voterName);
