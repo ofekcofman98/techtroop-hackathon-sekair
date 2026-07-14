@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ofekcofman98.github.io/techtroop-hackathon-sekair",
+  "homepage": "https://TechTroop-SekAir.github.io/techtroop-hackathon-sekair",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
