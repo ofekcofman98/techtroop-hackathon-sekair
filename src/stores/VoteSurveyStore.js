@@ -164,7 +164,6 @@ export class VoteSurveyStore {
       });
     }
 
-    console.log('Sending vote payload to DB:', rowsToInsert);
 
     try {
       await surveyService.submitResponses(rowsToInsert);
